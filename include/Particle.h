@@ -7,6 +7,7 @@
 
 #include "ParticleType.h"
 
+#include "SimpleVector.h"
 #include <array>
 
 class Particle {
@@ -15,21 +16,24 @@ class Particle {
   static int nParticleTypes_;                        // numero di tipi validi
 
   Type typeIndex_;
-  // componenti dell'impulso
-  double px_;
-  double py_;
-  double pz_;
 
-  void boost(double bx, double by, double bz);
+  SimpleVector<double> p_;
+
+  //  // componenti dell'impulso
+  //  double px_;
+  //  double py_;
+  //  double pz_;
+
+  void boost(const SimpleVector<double>& other);
 
  public:
   Particle(Type type, double px = 0, double py = 0, double pz = 0);
   Particle();
 
   [[nodiscard]] Type getType() const;
-  [[nodiscard]] bool setType(Type type);
-  [[nodiscard]] std::array<double, 3> getP() const;
-  void setP(double px, double py, double pz);
+  bool setType(Type type);
+  [[nodiscard]] const SimpleVector<double> &getP() const;
+  void setP(const SimpleVector<double> &p);
   [[nodiscard]] double getMass() const;
   [[nodiscard]] double getEnergy() const;
   [[nodiscard]] double InvMass(const Particle &other) const;

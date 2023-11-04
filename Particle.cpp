@@ -13,7 +13,7 @@
 #include <stdexcept>
 
 std::array<ParticleType, 10> Particle::particleTypes_ = {
-    ParticleType(),                       // non inizializzati
+    ParticleType(),// non inizializzati
     ParticleType(),
     ParticleType(),
     ParticleType(),
@@ -25,68 +25,67 @@ std::array<ParticleType, 10> Particle::particleTypes_ = {
     ParticleType(),
 };
 
-int Particle::nParticleTypes_ = 0
+int Particle::nParticleTypes_ = 0;
 
-void Particle::boost(double bx, double by, double bz) {
+void Particle::boost(const SimpleVector<double> &other) {
 
   double energy = getEnergy();
 
   //boost this Lorentz vector
-  double b2 = bx * bx + by * by + bz * bz;
+  double b2 = other * other;
   double gamma = 1.0 / sqrt(1.0 - b2);
-  double bp = bx * px_ + by * py_ + bz * pz_;
+  double bp = p_ * other;
   double gamma2 = b2 > 0 ? (gamma - 1.0) / b2 : 0.0;
 
-  px_ += gamma2 * bp * bx + gamma * bx * energy;
-  py_ += gamma2 * bp * by + gamma * by * energy;
-  pz_ += gamma2 * bp * bz + gamma * bz * energy;
+  p_ = p_ + other * (gamma2 * bp + gamma * energy);
+
+  //  px_ += gamma2 * bp * bx + gamma * bx * energy;
+  //  py_ += gamma2 * bp * by + gamma * by * energy;
+  //  pz_ += gamma2 * bp * bz + gamma * bz * energy;
 }
 
-Particle::Particle(Type type, double px, double py, double pz) : typeIndex_{type}, px_{px}, py_{py}, pz_{pz} {
+Particle::Particle(Type type, double px, double py, double pz) : typeIndex_{type}, p_{SimpleVector<double>::createCartesian(px, py, pz)} {
   if (typeIndex_ >= nParticleTypes_ || type < 0) {
     throw std::runtime_error("Il tipo di particella richiesta non esiste");
   }
 }
 
-Particle::Particle(): typeIndex_{undefined}, px_{0}, py_{0}, pz_{0} {}
+Particle::Particle() : typeIndex_{undefined}, p_{SimpleVector<double>::createEmpty()} {}
 
 Type Particle::getType() const { return typeIndex_; }
 
 bool Particle::setType(Type type) {
-  if (type >= nParticleTypes_ || type < 0) {
+  if (type >= nParticleTypes_) {
     return false;
   }
   typeIndex_ = type;
   return true;
 }
 
-std::array<double, 3> Particle::getP() const { return {px_, py_, pz_}; }
+const SimpleVector<double> &Particle::getP() const { return p_; }
 
-void Particle::setP(const double px, const double py, const double pz) {
-  px_ = px;
-  py_ = py;
-  pz_ = pz;
+void Particle::setP(const SimpleVector<double> &p) {
+  p_ = p;
 }
 
 double Particle::getMass() const { return particleTypes_[typeIndex_].getMass(); }
 
 double Particle::getEnergy() const {
-  return std::sqrt(getMass() * getMass() + px_ * px_ + py_ * py_ + pz_ * pz_);
+  return std::sqrt(getMass() * getMass() + p_ * p_);
 }
 
 double Particle::InvMass(const Particle &other) const {
-  auto thisImpulse = TLorentzVector(px_, py_, pz_, 0);
-  auto otherImpulse = TLorentzVector(other.px_, other.py_, other.pz_, 0);
+  SimpleVector totalImpulse = p_ + other.p_;
+  double totalEnergy = getEnergy() + other.getEnergy();
 
-  return std::sqrt((getEnergy() + other.getEnergy()) * (getEnergy() + other.getEnergy())
-                   + (thisImpulse + otherImpulse) * (thisImpulse + otherImpulse));
+  return std::sqrt(totalEnergy * totalEnergy + totalImpulse * totalImpulse);
 }
 
 int Particle::addParticleType(const std::string &name, double mass, int charge) {
   if (nParticleTypes_ >= particleTypes_.size()) {
     return 0;
   }
-//  particleTypes_[nParticleTypes_] = ParticleType(name, mass, charge);
+  //  particleTypes_[nParticleTypes_] = ParticleType(name, mass, charge);
   particleTypes_[nParticleTypes_] = ParticleType(name, mass, charge);
   nParticleTypes_++;
   return nParticleTypes_;
@@ -110,7 +109,7 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
   double massDau1 = dau1.getMass();
   double massDau2 = dau2.getMass();
 
-  if (particleTypes_[typeIndex_].isResonance()) { // add width effect
+  if (particleTypes_[typeIndex_].isResonance()) {// add width effect
 
     // gaussian random numbers
 
@@ -139,18 +138,23 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
   double norm = 2 * M_PI / RAND_MAX;
 
   double phi = rand() * norm;
-  double theta = rand() * norm * 0.5 - M_PI / 2.;
-  dau1.setP(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi), pout * cos(theta));
-  dau2.setP(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi), -pout * cos(theta));
+  double theta = rand() * norm * 0.5 - M_PI / 2.;                                             // [- pi/2, pi/2]
+//  dau1.setP(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi), pout * cos(theta));   // z > 0
+//  dau2.setP(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi), -pout * cos(theta));// z < 0
 
-  double energy = sqrt(px_ * px_ + py_ * py_ + pz_ * pz_ + massMot * massMot);
+  dau1.setP(SimpleVector<double>::createPolar(phi, theta, pout));
+  dau2.setP(SimpleVector<double>::createPolar(phi, theta, pout) * -1);
 
-  double bx = px_ / energy;
-  double by = py_ / energy;
-  double bz = pz_ / energy;
+  double energy = sqrt(p_ * p_ + massMot * massMot);
 
-  dau1.boost(bx, by, bz);
-  dau2.boost(bx, by, bz);
+//  double bx = px_ / energy;
+//  double by = py_ / energy;
+//  double bz = pz_ / energy;
+
+  SimpleVector<double> b = p_ / energy;
+
+  dau1.boost(b);
+  dau2.boost(b);
 
   return 0;
 }
@@ -159,9 +163,9 @@ void Particle::print() const {
   std::cout << "Indice del tipo di particella: " << typeIndex_ << '\n'
             << "Nome della particella: " << particleTypes_[typeIndex_].getName() << '\n'
             << "Componenti dell'impulso:\n"
-            << "\tx: " << px_ << '\n'
-            << "\ty: " << py_ << '\n'
-            << "\tz: " << pz_ << '\n';
+            << "\tx: " << p_.x() << '\n'
+            << "\ty: " << p_.y() << '\n'
+            << "\tz: " << p_.z() << '\n';
 }
 
 void Particle::printParticles() {
@@ -170,4 +174,3 @@ void Particle::printParticles() {
     std::cout << '\n';
   }
 }
-
