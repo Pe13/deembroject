@@ -19,11 +19,6 @@ class Particle {
 
   SimpleVector<double> p_;
 
-  //  // componenti dell'impulso
-  //  double px_;
-  //  double py_;
-  //  double pz_;
-
   void boost(const SimpleVector<double>& other);
 
  public:
@@ -40,6 +35,8 @@ class Particle {
 
   static int addParticleType(const std::string &name, double mass, int charge);
   static int addParticleType(const std::string &name, double mass, int charge, double width);
+
+  static int getNParticleTypes();
 
   int decay2body(Particle &dau1, Particle &dau2) const;
 

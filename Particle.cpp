@@ -99,6 +99,10 @@ int Particle::addParticleType(const std::string &name, double mass, int charge, 
   return nParticleTypes_;
 }
 
+int Particle::getNParticleTypes() {
+  return nParticleTypes_;
+}
+
 int Particle::decay2body(Particle &dau1, Particle &dau2) const {
   if (getMass() == 0.0) {
     printf("Decayment cannot be preformed if mass is zero\n");

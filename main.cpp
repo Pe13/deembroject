@@ -2,15 +2,18 @@
 // Created by paolo on 02/11/2023.
 //
 
-#include "ParticleType.h"
 #include "Particle.h"
+#include "ParticleType.h"
 
+#include <TH1.h>
+#include <TROOT.h>
 #include <TRandom.h>
+
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <execution>
 #include <iostream>
-#include <array>
 #include <mutex>
 
 Type choosType(double ran) {
@@ -36,6 +39,8 @@ Type choosType(double ran) {
 }
 
 int main() {
+  ROOT::EnableThreadSafety();
+
   Particle::addParticleType("\\pi +", 0.139657, 1);  // pione positivo
   Particle::addParticleType("\\pi -", 0.139657, 1);  // pione negativo
   Particle::addParticleType("K+", 0.49367, 1);       // kaone positivo
@@ -46,11 +51,17 @@ int main() {
 
   gRandom->SetSeed();
 
+  std::array<TH1*, 10> histograms{
+      new TH1I("types of particle", "types of particle", Particle::getNParticleTypes(), 0, Particle::getNParticleTypes()-1),
+      new TH1
+  };
+
   for (int _ = 0; _ < 1e5; _++) {
-    std::array<Particle,130> event; // la probabilità che in un evento da 100 particelle più di 15 siano K* è minore dell'1‰
+    std::array<Particle, 130> event;// la probabilità che in un evento da 100 particelle più di 15 siano K* è minore dell'1‰
     int lastChildIndex = 100;
     std::mutex lastChildIndexMutex;
 
+    // genero l'evento
     std::for_each_n(std::execution::par, event.begin(), 100, [&](Particle &particle) {
       double phi = gRandom->Uniform(0, 2 * M_PI);
       double theta = gRandom->Uniform(0, M_PI);
@@ -79,10 +90,9 @@ int main() {
         }
 
         particle.decay2body(event[i], event[i + 1]);
-
       }
     });
   }
 
-    return 0;
+  return 0;
 }
