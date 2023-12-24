@@ -27,7 +27,7 @@ ParticleType::ParticleType(const std::string &name, double mass, int charge,
   }
 }
 
-ParticleType &ParticleType::operator=(ParticleType const&particle_type) {
+ParticleType &ParticleType::operator=(ParticleType const &particle_type) {
   auto name = const_cast<std::string *>(&name_);
   *name = particle_type.name_;
 

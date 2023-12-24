@@ -19,7 +19,7 @@ class Particle {
 
   SimpleVector<double> p_;
 
-  void boost(const SimpleVector<double>& other);
+  void boost(const SimpleVector<double> &other);
 
  public:
   Particle(Type type, double px = 0, double py = 0, double pz = 0);
@@ -30,8 +30,9 @@ class Particle {
   [[nodiscard]] const SimpleVector<double> &getP() const;
   void setP(const SimpleVector<double> &p);
   [[nodiscard]] double getMass() const;
+  [[nodiscard]] int getCharge() const;
   [[nodiscard]] double getEnergy() const;
-  [[nodiscard]] double InvMass(const Particle &other) const;
+  [[nodiscard]] double invMass(const Particle &other) const;
 
   static int addParticleType(const std::string &name, double mass, int charge);
   static int addParticleType(const std::string &name, double mass, int charge, double width);

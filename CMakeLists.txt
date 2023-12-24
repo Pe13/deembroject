@@ -27,7 +27,7 @@ add_executable(deembroject
         main.cpp
         ParticleType.cpp
         Particle.cpp
-        )
+)
 
 target_include_directories(deembroject PRIVATE include)
 target_link_libraries(deembroject PRIVATE ROOT::Core ROOT::Hist ROOT::Physics ROOT::Gpad)

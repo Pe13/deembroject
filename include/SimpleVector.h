@@ -14,16 +14,15 @@ class SimpleVector {
   T y_;
   T z_;
 
-  SimpleVector(const T x, const T y, const T z) : x_{x}, y_{y}, z_{z}{};
+  SimpleVector(const T x, const T y, const T z) : x_{x}, y_{y}, z_{z} {};
 
  public:
-
-  static  SimpleVector createEmpty() {
+  static SimpleVector createEmpty() {
     return SimpleVector(0, 0, 0);
   }
 
   static SimpleVector createCartesian(const T x, const T y, const T z) {
-        return SimpleVector(x, y, z);
+    return SimpleVector(x, y, z);
   }
 
   static SimpleVector createPolar(double phi, double theta, double r) {
@@ -36,42 +35,46 @@ class SimpleVector {
     return SimpleVector(x, y, z);
   }
 
-  SimpleVector operator+(const SimpleVector& other) const {
-      return createCartesian(x_ + other.x_, y_ + other.y_, z_ + other.z_);
+  SimpleVector operator+(const SimpleVector &other) const {
+    return createCartesian(x_ + other.x_, y_ + other.y_, z_ + other.z_);
   }
 
-  SimpleVector operator-(const SimpleVector& other) const {
-      return createCartesian(x_ - other.x_, y_ - other.y_, z_ - other.z_);
+  SimpleVector operator-(const SimpleVector &other) const {
+    return createCartesian(x_ - other.x_, y_ - other.y_, z_ - other.z_);
   }
 
-  auto operator*(const SimpleVector& other) const {
-      return x_ * other.x_ + y_ * other.y_ + z_ * other.z_;
+  auto operator*(const SimpleVector &other) const {
+    return x_ * other.x_ + y_ * other.y_ + z_ * other.z_;
   }
 
   template<typename S>
   SimpleVector operator*(const S scalar) const {
-      return createCartesian(x_ * scalar, y_ * scalar, z_ * scalar);
+    return createCartesian(x_ * scalar, y_ * scalar, z_ * scalar);
   }
 
   template<typename S>
   SimpleVector operator/(const S scalar) const {
-      return createCartesian(x_ / scalar, y_ / scalar, z_ / scalar);
+    return createCartesian(x_ / scalar, y_ / scalar, z_ / scalar);
   }
 
   T x() const {
-      return x_;
+    return x_;
   }
 
   T y() const {
-      return y_;
+    return y_;
   }
 
   T z() const {
-      return z_;
+    return z_;
   }
 
   [[nodiscard]] double magnitude() const {
     return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
+  }
+
+  [[nodiscard]] double tMagnitude() const {
+    return std::sqrt(x_ * x_ + y_ * y_);
   }
 
   [[nodiscard]] double phi() const {

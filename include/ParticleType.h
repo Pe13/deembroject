@@ -32,7 +32,7 @@ class ParticleType {
   ParticleType(const std::string &name, double mass, int charge);
   ParticleType(const std::string &name, double mass, int charge, double width);
 
-  ParticleType& operator=(ParticleType const& particle_type);
+  ParticleType &operator=(ParticleType const &particle_type);
 
   static int getNParticleTypes();
   static const std::map<int, std::string> &getParticleNames();

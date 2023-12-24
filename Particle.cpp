@@ -70,11 +70,15 @@ void Particle::setP(const SimpleVector<double> &p) {
 
 double Particle::getMass() const { return particleTypes_[typeIndex_].getMass(); }
 
+int Particle::getCharge() const {
+  return particleTypes_[typeIndex_].getCharge();
+}
+
 double Particle::getEnergy() const {
   return std::sqrt(getMass() * getMass() + p_ * p_);
 }
 
-double Particle::InvMass(const Particle &other) const {
+double Particle::invMass(const Particle &other) const {
   SimpleVector totalImpulse = p_ + other.p_;
   double totalEnergy = getEnergy() + other.getEnergy();
 
@@ -141,19 +145,19 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
 
   double norm = 2 * M_PI / RAND_MAX;
 
-  double phi = rand() * norm;
-  double theta = rand() * norm * 0.5 - M_PI / 2.;                                             // [- pi/2, pi/2]
-//  dau1.setP(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi), pout * cos(theta));   // z > 0
-//  dau2.setP(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi), -pout * cos(theta));// z < 0
+  double phi = rand() * norm;                    // [0, 2pi]
+  double theta = rand() * norm * 0.5 - M_PI / 2.;// [- pi/2, pi/2]
+                                                 //  dau1.setP(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi), pout * cos(theta));   // z > 0
+                                                 //  dau2.setP(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi), -pout * cos(theta));// z < 0
 
   dau1.setP(SimpleVector<double>::createPolar(phi, theta, pout));
   dau2.setP(SimpleVector<double>::createPolar(phi, theta, pout) * -1);
 
   double energy = sqrt(p_ * p_ + massMot * massMot);
 
-//  double bx = px_ / energy;
-//  double by = py_ / energy;
-//  double bz = pz_ / energy;
+  //  double bx = px_ / energy;
+  //  double by = py_ / energy;
+  //  double bz = pz_ / energy;
 
   SimpleVector<double> b = p_ / energy;
 
