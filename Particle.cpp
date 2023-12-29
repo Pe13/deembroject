@@ -13,25 +13,17 @@
 #include <stdexcept>
 
 std::array<ParticleType, 10> Particle::particleTypes_ = {
-    ParticleType(),// non inizializzati
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
-    ParticleType(),
+    ParticleType(),  // non inizializzati
+    ParticleType(), ParticleType(), ParticleType(), ParticleType(), ParticleType(),
+    ParticleType(), ParticleType(), ParticleType(), ParticleType(),
 };
 
 int Particle::nParticleTypes_ = 0;
 
 void Particle::boost(const SimpleVector<double> &other) {
-
   double energy = getEnergy();
 
-  //boost this Lorentz vector
+  // boost this Lorentz vector
   double b2 = other * other;
   double gamma = 1.0 / sqrt(1.0 - b2);
   double bp = p_ * other;
@@ -44,7 +36,8 @@ void Particle::boost(const SimpleVector<double> &other) {
   //  pz_ += gamma2 * bp * bz + gamma * bz * energy;
 }
 
-Particle::Particle(Type type, double px, double py, double pz) : typeIndex_{type}, p_{SimpleVector<double>::createCartesian(px, py, pz)} {
+Particle::Particle(Type type, double px, double py, double pz)
+    : typeIndex_{type}, p_{SimpleVector<double>::createCartesian(px, py, pz)} {
   if (typeIndex_ >= nParticleTypes_ || type < 0) {
     throw std::runtime_error("Il tipo di particella richiesta non esiste");
   }
@@ -64,25 +57,19 @@ bool Particle::setType(Type type) {
 
 const SimpleVector<double> &Particle::getP() const { return p_; }
 
-void Particle::setP(const SimpleVector<double> &p) {
-  p_ = p;
-}
+void Particle::setP(const SimpleVector<double> &p) { p_ = p; }
 
 double Particle::getMass() const { return particleTypes_[typeIndex_].getMass(); }
 
-int Particle::getCharge() const {
-  return particleTypes_[typeIndex_].getCharge();
-}
+int Particle::getCharge() const { return particleTypes_[typeIndex_].getCharge(); }
 
-double Particle::getEnergy() const {
-  return std::sqrt(getMass() * getMass() + p_ * p_);
-}
+double Particle::getEnergy() const { return std::sqrt(getMass() * getMass() + p_ * p_); }
 
 double Particle::invMass(const Particle &other) const {
   SimpleVector totalImpulse = p_ + other.p_;
   double totalEnergy = getEnergy() + other.getEnergy();
 
-  return std::sqrt(totalEnergy * totalEnergy + totalImpulse * totalImpulse);
+  return std::sqrt(totalEnergy * totalEnergy - totalImpulse * totalImpulse);
 }
 
 int Particle::addParticleType(const std::string &name, double mass, int charge) {
@@ -103,9 +90,7 @@ int Particle::addParticleType(const std::string &name, double mass, int charge, 
   return nParticleTypes_;
 }
 
-int Particle::getNParticleTypes() {
-  return nParticleTypes_;
-}
+int Particle::getNParticleTypes() { return nParticleTypes_; }
 
 int Particle::decay2body(Particle &dau1, Particle &dau2) const {
   if (getMass() == 0.0) {
@@ -117,16 +102,19 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
   double massDau1 = dau1.getMass();
   double massDau2 = dau2.getMass();
 
-  if (particleTypes_[typeIndex_].isResonance()) {// add width effect
+  if (particleTypes_[typeIndex_].isResonance()) {  // add width effect
 
     // gaussian random numbers
 
-    float x1, x2, w, y1;
+    float x1;
+    float x2;
+    float w;
+    float y1;
 
     double invnum = 1. / RAND_MAX;
     do {
-      x1 = 2.0 * rand() * invnum - 1.0;
-      x2 = 2.0 * rand() * invnum - 1.0;
+      x1 = 2.0 * rand() * invnum - 1.0;  // [-1;1]
+      x2 = 2.0 * rand() * invnum - 1.0;  // [-1;1]
       w = x1 * x1 + x2 * x2;
     } while (w >= 1.0);
 
@@ -141,17 +129,21 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
     return 2;
   }
 
-  double pout = sqrt((massMot * massMot - (massDau1 + massDau2) * (massDau1 + massDau2)) * (massMot * massMot - (massDau1 - massDau2) * (massDau1 - massDau2))) / massMot * 0.5;
+  double pout = sqrt((massMot * massMot - (massDau1 + massDau2) * (massDau1 + massDau2)) *
+                     (massMot * massMot - (massDau1 - massDau2) * (massDau1 - massDau2))) /
+                massMot * 0.5;
 
   double norm = 2 * M_PI / RAND_MAX;
 
-  double phi = rand() * norm;                    // [0, 2pi]
-  double theta = rand() * norm * 0.5 - M_PI / 2.;// [- pi/2, pi/2]
-                                                 //  dau1.setP(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi), pout * cos(theta));   // z > 0
-                                                 //  dau2.setP(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi), -pout * cos(theta));// z < 0
+  double phi = rand() * norm;                     // [0, 2pi]
+  double theta = rand() * norm * 0.5 - M_PI / 2;  // [- pi/2, pi/2]
+//  dau1.setP(SimpleVector<double>::createCartesian(pout * sin(theta) * cos(phi), pout * sin(theta) * sin(phi),
+//                                                  pout * cos(theta)));  // z > 0
+//  dau2.setP(SimpleVector<double>::createCartesian(-pout * sin(theta) * cos(phi), -pout * sin(theta) * sin(phi),
+//                                                  -pout * cos(theta)));  // z < 0
 
   dau1.setP(SimpleVector<double>::createPolar(phi, theta, pout));
-  dau2.setP(SimpleVector<double>::createPolar(phi, theta, pout) * -1);
+  dau2.setP(SimpleVector<double>::createPolar(phi, theta, pout) * -1.);
 
   double energy = sqrt(p_ * p_ + massMot * massMot);
 
