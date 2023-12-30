@@ -24,6 +24,12 @@ std::vector<TH1 *> getHistograms(TFile *file) {
   return output;
 }
 
+double invMassNumberWithNParticles(double n) {
+  double intPart;
+  double decimalPart = std::modf(n - 1, &intPart);
+  return intPart * (intPart + 1) / 2 + (intPart + 1) * decimalPart;
+}
+
 void analise(char *fileName) {
   auto file = new TFile(fileName);
   auto histograms = getHistograms(file);
@@ -58,17 +64,81 @@ void analise(char *fileName) {
   auto invMassType2Histogram = dynamic_cast<TH1D *>(file->Get("invariant mass pp-Kp or pm-Km"));
   auto invMassSameMotherHistogram = dynamic_cast<TH1D *>(file->Get("invariant mass same mother"));
 
-  std::cout << "Checking consistency of entries number\n";
+  std::cout << "Checking consistency of entries number\n\n";
 
-  for (size_t i = 0; i < 5; i++) {
-    auto &h = histograms[i];
+  std::for_each_n(histograms.begin(), 5, [](const TH1* h) {
     if (h->GetEntries() == 1e7) {
       std::cout << "OK: " << h->GetName() << " histogram has 1e7 entries\n";
     } else {
       std::cout << "ERROR: " << h->GetName() << " histogram has " << h->GetEntries() << "instead of 1e7 entries\n";
     }
+  });
+
+  // la distribuzione è poissoniana con media 5.05e8 ovvero (1+2+...+100)e5 (100 particelle per evento con 1 K* che
+  // decade in 2 figlie -> 101 particelle)
+  if (std::abs(invMassHistogram->GetEntries() - 5.05e8) <= 2 * std::sqrt(5.05e8)) {
+    std::cout << "OK: invariant mass histogram has " << invMassHistogram->GetEntries()
+              << " entries which is consistent with a mean value of 5.05e8\n";
+  } else if (std::abs(invMassHistogram->GetEntries() - 5.05e8) <= 3 * std::sqrt(5.05e8)) {
+    std::cout << "WARNING: invariant mass histogram has " << invMassHistogram->GetEntries()
+              << " entries which could be more consistent with a mean value of 5.05e8 (2 stdev out)\n";
+  } else {
+    std::cout << "ERROR: invariant mass histogram has " << invMassHistogram->GetEntries()
+              << " entries which is not consistent with a mean value of 5.05e8 (3 stdev out)\n";
   }
 
+  // la distribuzione è poissoniana con media 2.5e8 ovvero (1+2+...+49 + 1+2+...+50)e5 (49 particelle positive e 50
+  // negative o viceversa per evento con 1 K* (neutra) che decade in 2 figlie di segno opposto -> 50 e 51
+  // particelle con carica concorde)
+  if (std::abs(invMassSameChargeHistogram->GetEntries() - 2.5e8) <= 2 * std::sqrt(2.5e8)) {
+    std::cout << "OK: invariant mass same charge histogram has " << invMassSameChargeHistogram->GetEntries()
+              << " entries which is consistent with a mean value of 2.5e8\n";
+  } else if (std::abs(invMassSameChargeHistogram->GetEntries() - 2.5e8) <= 3 * std::sqrt(2.5e8)) {
+    std::cout << "WARNING: invariant mass same charge histogram has " << invMassSameChargeHistogram->GetEntries()
+              << " entries which could be more consistent with a mean value of 2.5e8 (2 stdev out)\n";
+  } else {
+    std::cout << "ERROR: invariant mass same charge histogram has " << invMassSameChargeHistogram->GetEntries()
+              << " entries which is not consistent with a mean value of 2.5e8 (3 stdev out)\n";
+  }
+
+  // la distribuzione è poissoniana con media 2.55e8 (50 * 51)e5 (si vedano considerazioni per
+  // invMassSameChargeHistogram)
+  if (std::abs(invMassOppChargeHistogram->GetEntries() - 2.55e8) <= 2 * std::sqrt(2.55e8)) {
+    std::cout << "OK: invariant mass opposite charge histogram has " << invMassOppChargeHistogram->GetEntries()
+              << " entries which is consistent with a mean value of 2.55e8\n";
+  } else if (std::abs(invMassOppChargeHistogram->GetEntries() - 2.55e8) <= 3 * std::sqrt(2.55e8)) {
+    std::cout << "WARNING: invariant mass opposite charge histogram has " << invMassOppChargeHistogram->GetEntries()
+              << " entries which could be more consistent with a mean value of 2.55e8 (2 stdev out)\n";
+  } else {
+    std::cout << "ERROR: invariant mass opposite charge histogram has " << invMassOppChargeHistogram->GetEntries()
+              << " entries which is not consistent with a mean value of 2.55e8 (3 stdev out)\n";
+  }
+
+  // la distribuzione è poissoniana con media 4.46e7 (5*40 + 6*41)e5
+  if (std::abs(invMassType1Histogram->GetEntries() - 4.46e7) <= 2 * std::sqrt(4.46e7)) {
+    std::cout << "OK: invariant mass pp-Km or pm-Kp histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which is consistent with a mean value of 4.46e7\n";
+  } else if (std::abs(invMassType1Histogram->GetEntries() - 4.46e7) <= 3 * std::sqrt(4.46e7)) {
+    std::cout << "WARNING: invariant mass pp-Km or pm-Kp histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which could be more consistent with a mean value of 4.46e7 (2 stdev out)\n";
+  } else {
+    std::cout << "ERROR: invariant mass pp-Km or pm-K histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which is not consistent with a mean value of 4.46e7 (3 stdev out)\n";
+  }
+
+  // la distribuzione è poissoniana con media 4e7 (5 * 40 * 2)e5
+  if (std::abs(invMassType1Histogram->GetEntries() - 4e7) <= 2 * std::sqrt(4e7)) {
+    std::cout << "OK: invariant mass pp-Km or pm-Kp histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which is consistent with a mean value of 4e7\n";
+  } else if (std::abs(invMassType1Histogram->GetEntries() - 4e7) <= 3 * std::sqrt(4e7)) {
+    std::cout << "WARNING: invariant mass pp-Km or pm-Kp histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which could be more consistent with a mean value of 4e7 (2 stdev out)\n";
+  } else {
+    std::cout << "ERROR: invariant mass pp-Km or pm-K histogram has " << invMassType1Histogram->GetEntries()
+              << " entries which is not consistent with a mean value of 4e7 (3 stdev out)\n";
+  }
+
+  // la distribuzione è poissoniana, con valore medio 1e5 poiché in media c'è una K* per evento
   if (std::abs(invMassSameMotherHistogram->GetEntries() - 1e5) <= 2 * std::sqrt(1e5)) {
     std::cout << "OK: invariant mass same mother histogram has " << invMassSameMotherHistogram->GetEntries()
               << " entries which is consistent with a mean value of 1e5\n";

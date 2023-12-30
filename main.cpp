@@ -41,17 +41,11 @@ Type chooseType(double ran) {
   return Type::Ks;
 }
 
-void fillArrayOfHistograms(const double &val, const std::vector<std::shared_ptr<TH1>> &arr) {
-  for (auto &h : arr) {
-    h->Fill(val);
-  }
-}
-
 int main() {
   ROOT::EnableThreadSafety();
 
   Particle::addParticleType("\\pi +", 0.139657, 1);    // pione positivo
-  Particle::addParticleType("\\pi -", 0.139657, 1);    // pione negativo
+  Particle::addParticleType("\\pi -", 0.139657, -1);    // pione negativo
   Particle::addParticleType("K+", 0.49367, 1);         // kaone positivo
   Particle::addParticleType("K-", 0.49367, -1);        // kaone negativo
   Particle::addParticleType("P+", 0.93827, 1);         // protone
@@ -67,8 +61,8 @@ int main() {
       std::make_shared<TH1D>("polar angles", "polar angles", 1000, -M_PI / 2, M_PI / 2),
       std::make_shared<TH1D>("impulse distribution", "impulse distribution", 1000, 0, 5),
       std::make_shared<TH1D>("transverse impulse", "transverse impulse", 1000, 0, 3),
-      std::make_shared<TH1D>("invariant mass", "invariant mass", 10000, 0.01, 10),
-      std::make_shared<TH1D>("invariant mass opposite charge", "invariant mass opposite charge", 10000, 0.01, 10),
+      std::make_shared<TH1D>("invariant mass", "invariant mass", 10000, 0.01, 7),
+      std::make_shared<TH1D>("invariant mass opposite charge", "invariant mass opposite charge", 10000, 0.01, 7),
       std::make_shared<TH1D>("invariant mass same charge", "invariant mass same charge", 10000, 0, 7),
       std::make_shared<TH1D>("invariant mass pp-Km or pm-Kp", "invariant mass pp-Km or pm-Kp", 10000, 0, 7),
       std::make_shared<TH1D>("invariant mass pp-Kp or pm-Km", "invariant mass pp-Kp or pm-Km", 10000, 0, 7),
@@ -104,6 +98,7 @@ int main() {
     // genero l'evento
     benchmark->Start("Event generation");
     std::for_each_n(std::execution::par, event.begin(), 100, [&](Particle &particle) {
+//    std::for_each_n(event.begin(), 100, [&](Particle &particle) {
       double phi = gRandom->Uniform(0, 2 * M_PI);
       double theta = gRandom->Uniform(-M_PI / 2, M_PI / 2);
       double pMag = gRandom->Exp(1);
@@ -151,9 +146,12 @@ int main() {
     });
     benchmark->Stop("Histogram filling");
 
+    auto KsNumber = std::count_if(event.begin(), event.begin() + 100,
+                                  [](const Particle &particle) { return particle.getType() == Ks; });
+
     // std::array<double, 130 * 131 / 2> invMass{};
     // la size è uguale alla somma di 1+2+3+4+...+event.size() ovvero il numero delle masse invarianti
-    std::vector<double> invMass(event.size() * (event.size() - 1) / 2, 0);
+    std::vector<double> invMass((event.size() - KsNumber) * (event.size() - KsNumber - 1) / 2, 0);
 
     /**
      * in questo vector teniamo traccia di quali istogrammi devono essere riempiti con invMassIndex valori di invMass
@@ -164,7 +162,7 @@ int main() {
      *  se invece è vera c'è una combinazione pp-Km o pm-Kp e bisogna controllare la quarta posizione
      * - se la quarta posizione è vera le due particelle sono figlie della stessa madre
      */
-    std::vector<bool[4]> invMassMap(event.size() * (event.size() - 1) / 2);
+    std::vector<bool[4]> invMassMap(invMass.size());
 
     int invMassIndex = 0;
     std::mutex invMassIndexMutex;
@@ -186,7 +184,7 @@ int main() {
 
         invMass[index] = particle1->invMass(particle2);
 
-        invMassMap[index][0] = (particle1->getCharge() * particle2.getCharge() == 1);
+        invMassMap[index][0] = (particle1->getCharge() * particle2.getCharge() > 0);
 
         std::vector<bool> presentTypes(Particle::getNParticleTypes(), false);
 
@@ -234,7 +232,9 @@ int main() {
         }
       }
 
-      fillArrayOfHistograms(val, targetHistograms);
+      for (const auto &h: targetHistograms) {
+        h->Fill(val);
+      }
     }
     benchmark->Stop("Histogram filling");
   }
