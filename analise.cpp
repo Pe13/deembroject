@@ -6,7 +6,7 @@
 #include <TCollection.h>
 #include <TFile.h>
 #include <TH1.h>
-#include <TH1D.h>
+#include <TF1.h>
 #include <TKey.h>
 
 #include <algorithm>
@@ -149,4 +149,35 @@ void analise(char *fileName) {
     std::cout << "ERROR:  invariant mass same mother histogram has " << invMassSameMotherHistogram->GetEntries()
               << " entries which is not consistent with a mean value of 1e5 ( stdev out)\n";
   }
+
+  std::cout << "Checking consistency of generated particle proportions\n";
+
+  if (std::abs(topHistogram->GetBinContent(1) - 1e7 * .4) <= topHistogram->GetBinError(1) &&
+      std::abs(topHistogram->GetBinContent(2) - 1e7 * .4) <= topHistogram->GetBinError(2) &&
+      std::abs(topHistogram->GetBinContent(3) - 1e7 * .05) <= topHistogram->GetBinError(3) &&
+      std::abs(topHistogram->GetBinContent(4) - 1e7 * .05) <= topHistogram->GetBinError(4) &&
+      std::abs(topHistogram->GetBinContent(5) - 1e7 * .045) <= topHistogram->GetBinError(5) &&
+      std::abs(topHistogram->GetBinContent(6) - 1e7 * .045) <= topHistogram->GetBinError(6) &&
+      std::abs(topHistogram->GetBinContent(7) - 1e7 * .01) <= topHistogram->GetBinError(7)) {
+    std::cout << "OK: particles were generated in the right proportions\n";
+  } else {
+    std::cout << "ERROR: particles weren't generated in the right proportions\n";
+  }
+
+  std::cout << std::abs(topHistogram->GetBinContent(1) - 1e7 * .4) << "\t\t" <<  topHistogram->GetBinError(1) << '\n' <<
+      std::abs(topHistogram->GetBinContent(2) - 1e7 * .4) << "\t\t" <<  topHistogram->GetBinError(2) << '\n' <<
+      std::abs(topHistogram->GetBinContent(3) - 1e7 * .05) << "\t\t" <<  topHistogram->GetBinError(3) << '\n' <<
+      std::abs(topHistogram->GetBinContent(4) - 1e7 * .05) << "\t\t" <<  topHistogram->GetBinError(4) << '\n' <<
+      std::abs(topHistogram->GetBinContent(5) - 1e7 * .045) << "\t\t" <<  topHistogram->GetBinError(5) << '\n' <<
+      std::abs(topHistogram->GetBinContent(6) - 1e7 * .045) << "\t\t" <<  topHistogram->GetBinError(6) << '\n' <<
+      std::abs(topHistogram->GetBinContent(7) - 1e7 * .01) << "\t\t" <<  topHistogram->GetBinError(7) << '\n';
+
+  std::cout << "Checking isotropy of space\n";
+  auto uniformFit = std::make_unique<TF1>("uniformFit", "[0]", -M_PI / 2, 3. / 2 * M_PI);
+
+  uniformFit->SetParameters(1/M_PI);
+
+  polarHistogram->Fit(uniformFit.get(), "", "", -M_PI / 2, M_PI / 2);
+
+  uniformFit.
 }
