@@ -8,8 +8,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # richiedi l'uso di C++17, senza estensioni non-standard offerte dal compilatore usato
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED OFF)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 # abilita warning
 string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra")
@@ -31,3 +31,8 @@ add_executable(deembroject
 
 target_include_directories(deembroject PRIVATE include)
 target_link_libraries(deembroject PRIVATE ROOT::Core ROOT::Hist ROOT::Physics ROOT::Gpad)
+
+add_executable(prove
+        prove.cpp)
+
+target_link_libraries(prove PRIVATE ROOT::Core ROOT::Hist ROOT::Physics ROOT::Gpad)
