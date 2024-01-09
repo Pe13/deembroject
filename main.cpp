@@ -151,7 +151,7 @@ int main() {
                                   [](const Particle &particle) { return particle.getType() == Ks; });
 
     // std::array<double, 130 * 131 / 2> invMass{};
-    // la size è uguale alla somma di 1+2+3+4+...+event.size() ovvero il numero delle masse invarianti
+    // the size is equal to the sum of 1+2+3+4+...+event.size() which is the number of the invariant masses
     std::vector<double> invMass((event.size() - KsNumber) * (event.size() - KsNumber - 1) / 2, 0);
 
     /**
