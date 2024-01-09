@@ -15,7 +15,10 @@ inline std::vector<TH1 *> getHistograms(TFile *file) {
   TIter next(file->GetListOfKeys());
   TKey const *key;
   while ((key = dynamic_cast<TKey *>(next()))) {
-    output.push_back(dynamic_cast<TH1 *>(file->Get(key->GetName())));
+    auto ptr = dynamic_cast<TH1 *>(file->Get(key->GetName()));
+    if (ptr) {
+      output.push_back(ptr);
+    }
   }
   return output;
 }

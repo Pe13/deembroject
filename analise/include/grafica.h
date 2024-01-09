@@ -12,21 +12,21 @@ inline void setStyle() {
   gStyle->SetPalette(57);
   gStyle->SetOptTitle(0);
 
-  TH1F *h = new TH1F("h", "titolo istogramma", 10, 0, 10);
-
-  TF1 *f = new TF1("f", "gaus(0)", 0, 10);
-
-  TLegend *legend = new TLegend();
-
-  legend->AddEntry(h, "istogramma");
-  legend->AddEntry(f, "fit");
-
-  h->SetTitle("titolo");
-  h->GetXaxis()->SetTitle("asse x");
-  h->GetYaxis()->SetTitle("asse y");
-
-  h->Draw();
-  legend->Draw();
+//  TH1F *h = new TH1F("h", "titolo istogramma", 10, 0, 10);
+//
+//  TF1 *f = new TF1("f", "gaus(0)", 0, 10);
+//
+//  TLegend *legend = new TLegend();
+//
+//  legend->AddEntry(h, "istogramma");
+//  legend->AddEntry(f, "fit");
+//
+//  h->SetTitle("titolo");
+//  h->GetXaxis()->SetTitle("asse x");
+//  h->GetYaxis()->SetTitle("asse y");
+//
+//  h->Draw();
+//  legend->Draw();
 }
 
 inline void setHistogramsStyle(std::vector<TH1 *> &histograms) {
