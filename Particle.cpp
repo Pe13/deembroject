@@ -13,7 +13,7 @@
 #include <stdexcept>
 
 std::array<ParticleType, 10> Particle::particleTypes_ = {
-    ParticleType(),  // non inizializzati
+    ParticleType(),  // not initialized
     ParticleType(), ParticleType(), ParticleType(), ParticleType(), ParticleType(),
     ParticleType(), ParticleType(), ParticleType(), ParticleType(),
 };
@@ -23,7 +23,7 @@ int Particle::nParticleTypes_ = 0;
 void Particle::boost(const SimpleVector<double> &other) {
   double energy = getEnergy();
 
-  // boost this Lorentz vector
+  // Boost this Lorentz vector
   double b2 = other * other;
   double gamma = 1.0 / sqrt(1.0 - b2);
   double bp = p_ * other;
@@ -39,7 +39,7 @@ void Particle::boost(const SimpleVector<double> &other) {
 Particle::Particle(Type type, double px, double py, double pz)
     : typeIndex_{type}, p_{SimpleVector<double>::createCartesian(px, py, pz)} {
   if (typeIndex_ >= nParticleTypes_ || type < 0) {
-    throw std::runtime_error("Il tipo di particella richiesta non esiste");
+    throw std::runtime_error("This particle type doesn't exists");
   }
 }
 
@@ -104,7 +104,7 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
 
   if (particleTypes_[typeIndex_].isResonance()) {  // add width effect
 
-    // gaussian random numbers
+    // Gaussian random numbers
 
     float x1;
     float x2;
@@ -160,9 +160,9 @@ int Particle::decay2body(Particle &dau1, Particle &dau2) const {
 }
 
 void Particle::print() const {
-  std::cout << "Indice del tipo di particella: " << typeIndex_ << '\n'
-            << "Nome della particella: " << particleTypes_[typeIndex_].getName() << '\n'
-            << "Componenti dell'impulso:\n"
+  std::cout << "Index of particle type: " << typeIndex_ << '\n'
+            << "Name of particle: " << particleTypes_[typeIndex_].getName() << '\n'
+            << "Impulse components:\n"
             << "\tx: " << p_.x() << '\n'
             << "\ty: " << p_.y() << '\n'
             << "\tz: " << p_.z() << '\n';

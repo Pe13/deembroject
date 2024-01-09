@@ -96,7 +96,7 @@ int main() {
     int lastChildIndex = 100;
     std::mutex lastChildIndexMutex;
 
-    // genero l'evento
+    // Event generation
     benchmark->Start("Event generation");
     std::for_each_n(std::execution::par, event.begin(), 100, [&](Particle &particle) {
 //    std::for_each_n(event.begin(), 100, [&](Particle &particle) {
@@ -106,7 +106,7 @@ int main() {
       particle.setP(SimpleVector<double>::createPolar(phi, theta, pMag));
 
       if (!particle.setType(chooseType(gRandom->Rndm()))) {
-        std::cout << "Errore nell'assegnazione del tipo ad una particella";
+        std::cout << "Error in assigning the particle's type ";
         throw std::runtime_error("error");
       }
 
@@ -134,7 +134,7 @@ int main() {
     event.resize(event.rend() - std::find_if(event.rbegin(), event.rend(),
                                              [](const auto &particle) { return particle.getType() != undefined; }));
 
-    // riempiamo gli istogrammi che vogliono solo le particelle madri
+    // Filling histograms without second generation particles
     benchmark->Start("Histogram filling");
     std::for_each_n(event.begin(), 100, [&](const auto &particle) {
       topHistogram->Fill(particle.getType());
@@ -168,7 +168,7 @@ int main() {
     int invMassIndex = 0;
     std::mutex invMassIndexMutex;
 
-    // calcoliamo le masse invarianti
+    // Calculating invariant masses
     benchmark->Start("Computing invariant masses");
     for (auto particle1 = event.begin(); particle1 < event.end(); particle1++) {
       if (particle1->getType() == Ks || particle1->getType() == undefined) {
@@ -209,7 +209,7 @@ int main() {
     }
     benchmark->Stop("Computing invariant masses");
 
-    // riempiamo tutti gli istogrammi delle masse invarianti
+    // Filling histograms of the invariant mass
     benchmark->Start("Histogram filling");
     for (size_t i = 0; i < invMass.size(); i++) {
       auto const &val = invMass[i];

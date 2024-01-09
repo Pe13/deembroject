@@ -14,7 +14,7 @@ ParticleType::ParticleType()
 ParticleType::ParticleType(const std::string &name, double mass, int charge)
     : name_{name}, isResonance_{false}, mass_{mass}, charge_{charge} {
   if (mass <= 0) {
-    throw std::runtime_error("La massa non può essere negativa!");
+    throw std::runtime_error("Mass can't be negative!");
   }
 }
 
@@ -23,7 +23,7 @@ ParticleType::ParticleType(const std::string &name, double mass, int charge,
     : name_{name}, isResonance_{true}, mass_{mass}, charge_{charge},
       width_{width} {
   if (mass <= 0) {
-    throw std::runtime_error("La massa non può essere negativa!");
+    throw std::runtime_error("Mass can't be negative!");
   }
 }
 
@@ -49,8 +49,7 @@ ParticleType &ParticleType::operator=(ParticleType const &particle_type) {
 bool ParticleType::isResonance() const { return isResonance_; }
 
 const std::string &ParticleType::getName() const { return name_; }
-// la & serve per passare solo il punto e non la stringa intera, che di per sè
-// è molto pesante
+
 
 double ParticleType::getMass() const { return mass_; }
 
