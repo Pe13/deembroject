@@ -5,7 +5,6 @@
 #ifndef DEEMBROJECT_INCLUDE_PARTICLETYPE_H_
 #define DEEMBROJECT_INCLUDE_PARTICLETYPE_H_
 
-#include <map>
 #include <string>
 
 enum Type {
@@ -33,9 +32,6 @@ class ParticleType {
   ParticleType(const std::string &name, double mass, int charge, double width);
 
   ParticleType &operator=(ParticleType const &particle_type);
-
-  static int getNParticleTypes();
-  static const std::map<int, std::string> &getParticleNames();
 
   [[nodiscard]] bool isResonance() const;
   [[nodiscard]] const std::string &getName() const;

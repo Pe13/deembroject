@@ -15,6 +15,7 @@
 #include <execution>
 #include <iostream>
 #include <mutex>
+#include <filesystem>
 
 #include "Particle.h"
 #include "ParticleType.h"
@@ -252,5 +253,6 @@ int main() {
   benchmark->Print("Histogram filling");
   benchmark->Show("Total");
   delete benchmark;
+
   return 0;
 }
