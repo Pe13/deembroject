@@ -29,6 +29,24 @@ inline void setStyle() {
 //  legend->Draw();
 }
 
+inline void setHistogramsAxis(std::vector<TH1 *> &histograms) {
+  auto &topHistogram = histograms[0];
+  topHistogram->GetXaxis()->SetBinLabel(1, "#pi+");
+  topHistogram->GetXaxis()->SetBinLabel(2, "#pi-");
+  topHistogram->GetXaxis()->SetBinLabel(3, "K+");
+  topHistogram->GetXaxis()->SetBinLabel(4, "K-");
+  topHistogram->GetXaxis()->SetBinLabel(5, "p+");
+  topHistogram->GetXaxis()->SetBinLabel(6, "p-");
+  topHistogram->GetXaxis()->SetBinLabel(7, "K*");
+  topHistogram->GetXaxis()->SetTitle("Particle types");
+  topHistogram->GetYaxis()->SetTitle("N");
+
+  auto &azimuthHistogram = histograms[1];
+  azimuthHistogram->GetXaxis()->SetTitle("#phi");
+  azimuthHistogram->GetYaxis()->SetTitle("N");
+
+}
+
 inline void setHistogramsStyle(std::vector<TH1 *> &histograms) {
   std::for_each(histograms.begin(), histograms.end(), [&](TH1 *&h) {
     h->SetLineColor(kBlue - 1);
@@ -40,14 +58,10 @@ inline void setHistogramsStyle(std::vector<TH1 *> &histograms) {
     h->SetMarkerColor(1);
   });
 
-  histograms[0]->GetXaxis()->SetBinLabel(1, "#pi+");
-  histograms[0]->GetXaxis()->SetBinLabel(2, "#pi-");
-  histograms[0]->GetXaxis()->SetBinLabel(3, "K+");
-  histograms[0]->GetXaxis()->SetBinLabel(4, "K-");
-  histograms[0]->GetXaxis()->SetBinLabel(5, "p+");
-  histograms[0]->GetXaxis()->SetBinLabel(6, "p-");
-  histograms[0]->GetXaxis()->SetBinLabel(7, "K*");
+  setHistogramsAxis(histograms);
 }
+
+
 
 
 inline void setFitStyle(std::array<TF1 *, 5>& functions) {

@@ -21,7 +21,7 @@ string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra")
 find_package(ROOT 6.26 COMPONENTS CONFIG REQUIRED)
 #find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 #find_package(TGUI 1.0 REQUIRED)
-find_package(Boost 1.35 COMPONENTS container REQUIRED)
+#find_package(Boost 1.35 COMPONENTS container REQUIRED)
 
 add_executable(deembroject
         main.cpp

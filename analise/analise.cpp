@@ -82,11 +82,11 @@ void analise(const std::string &&fileName) {
   // Setting functions parameters
   auto &azimuthUniformFit = functions[0];
   azimuthUniformFit->SetParNames("Constant");
-  azimuthUniformFit->SetParameters(1e5);
+  azimuthUniformFit->SetParameter(1, 1e5);
 
   auto &polarUniformFit = functions[1];
   polarUniformFit->SetParNames("Constant");
-  polarUniformFit->SetParameters(1e5);
+  polarUniformFit->SetParameter(1, 1e5);
 
   auto &impulseExponentialFit = functions[2];
   impulseExponentialFit->SetParNames("Constant", "Mean");
@@ -120,15 +120,6 @@ void analise(const std::string &&fileName) {
 
   std::cout << "\n--- Checking impulse distribution ---\n";
   checkExponentialFit(impHistogram, impulseExponentialFit);
-
-//  auto KsGaussian = new TF1("KsGaussian", "gaus(0)");
-//  KsGaussian->SetParameters(sameVsOppositeChargeHistogram->GetMaximum() * 4 / 5, 0.89166, 0.050);
-
-//  sameVsOppositeChargeHistogram->Fit(KsGaussian, "BQ", "H", 0.6, 1.2);
-
-//  KsGaussian->SetParameters(type1VsType2Histogram->GetMaximum() * 4 / 5, 0.89166, 0.050);
-
-//  type1VsType2Histogram->Fit(KsGaussian, "BQ", "H", 0.6, 1.2);
 
   fitKSGaussian(sameVsOppositeChargeHistogram, sameVsOppositeChargeGaussianFit);
   fitKSGaussian(type1VsType2Histogram, type1VsType2GaussianFit);

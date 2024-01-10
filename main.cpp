@@ -45,6 +45,12 @@ Type chooseType(double ran) {
 int main() {
   ROOT::EnableThreadSafety();
 
+  auto file = std::make_unique<TFile>("histograms.root", "RECREATE");
+  if (!file->IsOpen()) {
+    std::cerr << "Error: unable to open file " << file->GetName() << "\n";
+    return 1;
+  }
+
   Particle::addParticleType("\\pi +", 0.139657, 1);    // pione positivo
   Particle::addParticleType("\\pi -", 0.139657, -1);    // pione negativo
   Particle::addParticleType("K+", 0.49367, 1);         // kaone positivo
@@ -239,8 +245,6 @@ int main() {
     }
     benchmark->Stop("Histogram filling");
   }
-
-  auto file = std::make_unique<TFile>("histograms.root", "RECREATE");
 
   for (const auto &h : histogramsArray) {
     h->Write();
