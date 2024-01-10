@@ -15,6 +15,8 @@ inline void checkUniformFit(TH1 *h, TF1 *f) {
   h->Fit(f, "QB", "", h->GetBinLowEdge(1), h->GetBinLowEdge(h->GetNbinsX() + 1));
     std::cout << "Fit result:\n"
               << "\tk = " << f->GetParameter(0) << " +/- " << f->GetParError(0) << '\n'
+              << "\tX^2 = " << f->GetChisquare() << '\n'
+              << "\tNDF = " << f->GetNDF() << '\n'
               << "\tX^2/NDF = " << f->GetChisquare() / f->GetNDF() << '\n'
               << "\tX^2 probability = " << f->GetProb() << '\n';
   if ((f->GetParameter(0) - 3 * f->GetParError(0)) * h->GetNbinsX() <= 1e7 &&
@@ -31,6 +33,8 @@ inline void checkExponentialFit(TH1 *h, TF1 *f) {
   std::cout << "Fit result:\n"
             << "\tk = " << f->GetParameter(0) << " +/- " << f->GetParError(0) << '\n'
             << "\tt = " << f->GetParameter(1) << " +/- " << f->GetParError(1) << '\n'
+            << "\tX^2 = " << f->GetChisquare() << '\n'
+            << "\tNDF = " << f->GetNDF() << '\n'
             << "\tX^2/NDF = " << f->GetChisquare() / f->GetNDF() << '\n'
             << "\tX^2 probability = " << f->GetProb() << '\n';
   if (f->GetParameter(1) - 3 * f->GetParError(1) <= 1 &&

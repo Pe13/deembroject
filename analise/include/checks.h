@@ -44,13 +44,13 @@ inline void checkGeneratedParticleProportions(const TH1 * topHistogram) {
     std::cout << "ERROR: particles weren't generated in the right proportions\n";
   }
 
-//  std::cout << std::abs(topHistogram->GetBinContent(1) - 1e7 * .4) << "\t\t" << topHistogram->GetBinError(1) << '\n'
-//            << std::abs(topHistogram->GetBinContent(2) - 1e7 * .4) << "\t\t" << topHistogram->GetBinError(2) << '\n'
-//            << std::abs(topHistogram->GetBinContent(3) - 1e7 * .05) << "\t\t" << topHistogram->GetBinError(3) << '\n'
-//            << std::abs(topHistogram->GetBinContent(4) - 1e7 * .05) << "\t\t" << topHistogram->GetBinError(4) << '\n'
-//            << std::abs(topHistogram->GetBinContent(5) - 1e7 * .045) << "\t\t" << topHistogram->GetBinError(5) << '\n'
-//            << std::abs(topHistogram->GetBinContent(6) - 1e7 * .045) << "\t\t" << topHistogram->GetBinError(6) << '\n'
-//            << std::abs(topHistogram->GetBinContent(7) - 1e7 * .01) << "\t\t" << topHistogram->GetBinError(7) << '\n';
+  std::cout << topHistogram->GetBinContent(1) << "\t\t +/- \t\t" << topHistogram->GetBinError(1) << '\n'
+            << topHistogram->GetBinContent(2) << "\t\t +/- \t\t" << topHistogram->GetBinError(2) << '\n'
+            << topHistogram->GetBinContent(3) << "\t\t +/- \t\t" << topHistogram->GetBinError(3) << '\n'
+            << topHistogram->GetBinContent(4) << "\t\t +/- \t\t" << topHistogram->GetBinError(4) << '\n'
+            << topHistogram->GetBinContent(5) << "\t\t +/- \t\t" << topHistogram->GetBinError(5) << '\n'
+            << topHistogram->GetBinContent(6) << "\t\t +/- \t\t" << topHistogram->GetBinError(6) << '\n'
+            << topHistogram->GetBinContent(7) << "\t\t +/- \t\t" << topHistogram->GetBinError(7) << '\n';
 }
 
 inline void checkIsotropy() {

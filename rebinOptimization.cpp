@@ -5,8 +5,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
-void macro_di_prova(const std::string& filename) {
+void rebinOptimization(const std::string& filename) {
   constexpr double mass = 0.89166;
   constexpr double width = 0.05;
 
@@ -31,7 +32,7 @@ void macro_di_prova(const std::string& filename) {
   std::array<double, maxReBin - 1> width_results{};
 
   for (int i = 2; i < maxReBin + 1; i++) {
-    auto clone = dynamic_cast<TH1D *>(type1VsType2->Clone());
+    auto clone = dynamic_cast<TH1D *>(sameVsOppositeChargeHistogram->Clone());
     clone->Rebin(i);
     KsGaussian->SetParameters(1e4, mass, width);
     clone->Fit(KsGaussian, "QB", "", .6, 1.2);
@@ -45,8 +46,8 @@ void macro_di_prova(const std::string& filename) {
             << std::min_element(width_results.begin(), width_results.end()) - width_results.begin() << '\n';
 }
 
-int main() {
-  macro_di_prova();
-
-  return 0;
-}
+//int main() {
+//  macro_di_prova();
+//
+//  return 0;
+//}

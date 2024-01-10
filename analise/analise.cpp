@@ -55,13 +55,13 @@ void analise(const std::string &&fileName) {
       dynamic_cast<TH1D *>(invMassOppChargeHistogram->Clone("same vs opposite charge"));
   histograms.push_back(sameVsOppositeChargeHistogram);
   sameVsOppositeChargeHistogram->Add(invMassSameChargeHistogram, -1);
-  sameVsOppositeChargeHistogram->Rebin(73);
+  sameVsOppositeChargeHistogram->Rebin(24);
   sameVsOppositeChargeHistogram->SetAxisRange(0.6, 1.2);
 
   auto type1VsType2Histogram = dynamic_cast<TH1D *>(invMassType1Histogram->Clone("pp-Km or pm-Kp vs pp-Kp or pm-Km"));
   histograms.push_back(type1VsType2Histogram);
   type1VsType2Histogram->Add(invMassType2Histogram, -1);
-  type1VsType2Histogram->Rebin(28);
+  type1VsType2Histogram->Rebin(24);
   type1VsType2Histogram->SetAxisRange(0.6, 1.2);
 
   auto sameMotherZoom = dynamic_cast<TH1D *>(invMassSameMotherHistogram->Clone("sameMotherZoom"));
@@ -69,12 +69,13 @@ void analise(const std::string &&fileName) {
   sameMotherZoom->SetAxisRange(0.6, 1.2);
 
   // Creating functions to fit histograms
-  std::array<TF1 *, 5> functions = {
+  std::array<TF1 *, 6> functions = {
       new TF1("azimuthUniformFit", "pol0", -M_PI / 2, 3. / 2 * M_PI),
       new TF1("polarUniformFit", "pol0", -M_PI / 2, 3. / 2 * M_PI),
       new TF1("impulseExponentialFit", "[0]*exp(-x/[1])", impHistogram->GetBinLowEdge(1),
               impHistogram->GetBinLowEdge(impHistogram->GetNbinsX() +
                                           1)),  // the same boundaries of the impulse distribution histogram
+      new TF1("same mother gaussian", "gaus(0)"),
       new TF1("same vs opposite charge gaussian", "gaus(0)"),
       new TF1("pp-Km or pm-Kp vs pp-Kp or pm-Km gaussian", "gaus(0)"),
   };
@@ -92,11 +93,15 @@ void analise(const std::string &&fileName) {
   impulseExponentialFit->SetParNames("Constant", "Mean");
   impulseExponentialFit->SetParameters(1e5, 1);
 
-  auto &sameVsOppositeChargeGaussianFit = functions[3];
+  auto &sameMotherGaussianFit = functions[3];
+  sameMotherGaussianFit->SetParNames("Constant", "K* mass", "K* width");
+  sameMotherGaussianFit->SetParameters(4e4, Kmass, Kwidth);
+
+  auto &sameVsOppositeChargeGaussianFit = functions[4];
   sameVsOppositeChargeGaussianFit->SetParNames("Constant", "K* mass", "K* width");
   sameVsOppositeChargeGaussianFit->SetParameters(4e4, Kmass, Kwidth);
 
-  auto &type1VsType2GaussianFit = functions[4];
+  auto &type1VsType2GaussianFit = functions[5];
   type1VsType2GaussianFit->SetParNames("Constant", "K* mass", "K* width");
   type1VsType2GaussianFit->SetParameters(1.8e4, Kmass, Kwidth);
 
@@ -123,6 +128,7 @@ void analise(const std::string &&fileName) {
 
   fitKSGaussian(sameVsOppositeChargeHistogram, sameVsOppositeChargeGaussianFit);
   fitKSGaussian(type1VsType2Histogram, type1VsType2GaussianFit);
+  fitKSGaussian(sameMotherZoom, sameMotherGaussianFit);
 
   delete canvasappoggio;
 
@@ -141,7 +147,7 @@ int main(int argc, char **argv) {
   quitButton->Draw();
 
   // Program's execution
-  analise("../histograms.root");
+  analise("../1.root");
 
   // Run Root Lancio interfaccia di Root
   app.Run();
