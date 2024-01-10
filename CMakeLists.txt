@@ -32,8 +32,8 @@ add_executable(deembroject
 target_include_directories(deembroject PRIVATE include)
 target_link_libraries(deembroject PRIVATE ROOT::Core ROOT::Hist ROOT::Physics ROOT::Gpad)
 
-add_executable(prove
-        prove.cpp)
-target_link_libraries(prove PRIVATE ROOT::Core ROOT::Hist ROOT::Gpad)
+#add_executable(prove
+#        prove.cpp)
+#target_link_libraries(prove PRIVATE ROOT::Core ROOT::Hist ROOT::Gpad)
 
 add_subdirectory(analise)

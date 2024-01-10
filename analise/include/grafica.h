@@ -50,6 +50,15 @@ inline void setHistogramsAxis(std::vector<TH1 *> &histograms) {
   polarHistogram->GetXaxis()->SetTitle("#theta (polar angle)");
   polarHistogram->GetYaxis()->SetTitle("Entries");
 
+  auto &impulseHistogram = histograms[3];
+  impulseHistogram->GetXaxis()->SetTitle("Momentum (GeV/c)");
+  impulseHistogram->GetYaxis()->SetTitle("Entries");
+
+  for (int i = 11; i < 14; i++) {
+    histograms[i]->GetXaxis()->SetTitle("Invariant mass (GeV/c^2)");
+    histograms[i]->GetYaxis()->SetTitle("Entries");
+  }
+
 }
 
 inline void setHistogramsStyle(std::vector<TH1 *> &histograms) {

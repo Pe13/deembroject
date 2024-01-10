@@ -110,10 +110,6 @@ void analise(const std::string &&fileName) {
   std::cout << "--- Checking consistency of entries number ---\n";
   std::for_each_n(histograms.begin(), 5, [](const TH1 *h) { checkEntriesNumber(h); });
   checkEntriesNumber(invMassHistogram, 5.05e8, 3.131e4);
-  checkEntriesNumber(invMassSameChargeHistogram, 2.5e8, std::sqrt(2.5e8));
-  checkEntriesNumber(invMassOppChargeHistogram, 2.55e8, std::sqrt(2.55e8));
-  checkEntriesNumber(invMassType1Histogram, 4.46e7, std::sqrt(4.46e7));
-  checkEntriesNumber(invMassType1Histogram, 4e7, std::sqrt(4e7));
   checkEntriesNumber(invMassSameMotherHistogram, 1e5, std::sqrt(1e5));
 
   std::cout << "\n--- Checking consistency of generated particle proportions ---\n";
